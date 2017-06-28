@@ -19,6 +19,7 @@ Rugc <-  8.314472 # R universal gas constant
 Farad <- 9.64853399*10^4 # Faraday constant
 Temp <- 293 # temperature in Kelvins to infer Boltzmann parameters
 
+
 #### Set parameter defaults that are used if not defined by user
 if( !exists("file.volt") ){ file.volt <- "voltages.txt" } 
 if( !exists("current.orient") ){ current.orient <- rep("pos", length(PARAMS)) } 
@@ -36,7 +37,6 @@ install.packages("fitdistrplus")
 library(fitdistrplus)
 install.packages("drc") # for Boltzman
 library(drc)
-
 
 #### Create a function to write comments to a logfile "output/logfile.txt"
 output.log <- function( somestring ){
@@ -192,6 +192,7 @@ for( i in unique(data$Cell.Type)){
 	these <- which( data$Cell.Type == i)
 	OUTcap <- cbind( OUTcap, c(cap1[these], rep(NA, max.type-length(these))))
 }
+
 ylm <- 1.2*max(apply(OUTcap,2,max, na.rm=T))
 ymx <- apply(OUTcap,2,max, na.rm=T)
 boxplot( OUTcap , names=rownames(OUT), ylim=c(0,ylm) , main="Cap1 for all cell types", ylab="Cap1 (pF)", xlab="Cell type" )
@@ -200,6 +201,7 @@ for(i in 1:length(unique(data$Cell.Type))){
 	cnt <- length(which(data$Cell.Type == ctype))
 	text( i, 1.1*ymx[i], paste(cnt))
 }
+
 dev.off()
 output.log( paste("Boxplots of cap1 per cell type:", filename,sep="") )
 
@@ -286,6 +288,7 @@ for(p in 1:length(PARAMS)){
 				}else{
 					lines( volt, cnorm[these[j],], col=rainbow(lt)[j])
 				}
+
 			}
 		}
 		dev.off()
@@ -305,10 +308,12 @@ for(p in 1:length(PARAMS)){
 		SEM <- rbind(SEM, sem)
 	}
 	plot( matrix(volt, byrow=TRUE, nrow=nrow(CM), ncol=ncol(CM)), CM, col=rainbow(lt), main=paste("Mean of normalized", label.c, "current"), ylab=paste("mean ", label.c, " normalized",sep=""), xlab="Voltage")
+
 	for( i in 1:lt ){
 		x <- volt
 		y <- CM[i,]
 		sd <- SEM[i,]
+
 		if(Loess){
 			lo <- loess(y~x)
 			xl <- seq(min(x), max(x), (max(x)-min(x))/1000)
@@ -336,7 +341,6 @@ for(p in 1:length(PARAMS)){
 	colnames(OUT) <- nms
 	write.table( OUT, file=filename, row=T, col.names=NA, quote=F, sep="\t")
 
-
 	##### Fitting the partial Boltzman function
 	output.log(paste("\n### Fitting the partial Boltzman function for",param.c,"###"))
 	X_norm <- NULL
@@ -354,6 +358,7 @@ for(p in 1:length(PARAMS)){
 			output.log(paste("Normalizing the first",k,"points to zero."))
 			Mod1 <- lm( x[1:k] ~ volt[1:k] )
 		}
+
 		# For C2, start from the right
 		if( param.c == "c2"){
 			k=length(volt)
@@ -592,6 +597,7 @@ write.table( cbind(OUTx, OUTy, OUTauc), file=filename, row=unique( gsub( "C2 ", 
 
 
 
+
 ##### Analysis of the activation (C1) current density
 output.log( "\n### Current density: ###\n" )
 
@@ -745,9 +751,4 @@ write.table( IS.SAME, file=filename, sep="\t", quote=F, append=TRUE, col.names=N
 
 
 output.log( "\n\n###### Completed ######\n" )
-
-
-
-
-
 
